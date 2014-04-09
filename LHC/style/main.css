@@ -5,7 +5,7 @@ html, body {
   background: #faf8ef;
   color: #776e65;
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-  font-size: 18pt; }
+  font-size: 18px; }
 
 body {
   margin: 80px 0; }
@@ -30,7 +30,6 @@ h1.title {
   100% {
     top: -50px;
     opacity: 0; } }
-
 @-moz-keyframes move-up {
   0% {
     top: 25px;
@@ -39,7 +38,6 @@ h1.title {
   100% {
     top: -50px;
     opacity: 0; } }
-
 @keyframes move-up {
   0% {
     top: 25px;
@@ -48,7 +46,6 @@ h1.title {
   100% {
     top: -50px;
     opacity: 0; } }
-
 .scores-container {
   float: right;
   text-align: right; }
@@ -128,34 +125,34 @@ hr {
 
   100% {
     opacity: 1; } }
-
 @-moz-keyframes fade-in {
   0% {
     opacity: 0; }
 
   100% {
     opacity: 1; } }
-
 @keyframes fade-in {
   0% {
     opacity: 0; }
 
   100% {
     opacity: 1; } }
-
 .game-container {
   margin-top: 40px;
   position: relative;
   padding: 15px;
   cursor: default;
   -webkit-touch-callout: none;
+  -ms-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
+  -ms-user-select: none;
+  -ms-touch-action: none;
+  touch-action: none;
   background: #bbada0;
   border-radius: 6px;
   width: 500px;
   height: 500px;
-  -ms-touch-action: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
@@ -314,7 +311,7 @@ hr {
     text-align: center;
     font-weight: bold;
     z-index: 10;
-    font-size: 12pt; }
+    font-size: 55px; }
   .tile.tile-2 .tile-inner {
     background: #eee4da;
     box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255, 0); }
@@ -336,23 +333,43 @@ hr {
   .tile.tile-128 .tile-inner {
     color: #f9f6f2;
     background: #edcf72;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.2381), inset 0 0 0 1px rgba(255, 255, 255, 0.14286); }
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.2381), inset 0 0 0 1px rgba(255, 255, 255, 0.14286);
+    font-size: 45px; }
+    @media screen and (max-width: 520px) {
+      .tile.tile-128 .tile-inner {
+        font-size: 25px; } }
   .tile.tile-256 .tile-inner {
     color: #f9f6f2;
     background: #edcc61;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.31746), inset 0 0 0 1px rgba(255, 255, 255, 0.19048); }
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.31746), inset 0 0 0 1px rgba(255, 255, 255, 0.19048);
+    font-size: 45px; }
+    @media screen and (max-width: 520px) {
+      .tile.tile-256 .tile-inner {
+        font-size: 25px; } }
   .tile.tile-512 .tile-inner {
     color: #f9f6f2;
     background: #edc850;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.39683), inset 0 0 0 1px rgba(255, 255, 255, 0.2381); }
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.39683), inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+    font-size: 45px; }
+    @media screen and (max-width: 520px) {
+      .tile.tile-512 .tile-inner {
+        font-size: 25px; } }
   .tile.tile-1024 .tile-inner {
     color: #f9f6f2;
     background: #edc53f;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.47619), inset 0 0 0 1px rgba(255, 255, 255, 0.28571); }
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.47619), inset 0 0 0 1px rgba(255, 255, 255, 0.28571);
+    font-size: 35px; }
+    @media screen and (max-width: 520px) {
+      .tile.tile-1024 .tile-inner {
+        font-size: 15px; } }
   .tile.tile-2048 .tile-inner {
     color: #f9f6f2;
     background: #edc22e;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.55556), inset 0 0 0 1px rgba(255, 255, 255, 0.33333); }
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.55556), inset 0 0 0 1px rgba(255, 255, 255, 0.33333);
+    font-size: 35px; }
+    @media screen and (max-width: 520px) {
+      .tile.tile-2048 .tile-inner {
+        font-size: 15px; } }
   .tile.tile-super .tile-inner {
     color: #f9f6f2;
     background: #3c3a32;
@@ -373,7 +390,6 @@ hr {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1); } }
-
 @-moz-keyframes appear {
   0% {
     opacity: 0;
@@ -386,7 +402,6 @@ hr {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1); } }
-
 @keyframes appear {
   0% {
     opacity: 0;
@@ -399,7 +414,6 @@ hr {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1); } }
-
 .tile-new .tile-inner {
   -webkit-animation: appear 200ms ease 100ms;
   -moz-animation: appear 200ms ease 100ms;
@@ -423,7 +437,6 @@ hr {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1); } }
-
 @-moz-keyframes pop {
   0% {
     -webkit-transform: scale(0);
@@ -439,7 +452,6 @@ hr {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1); } }
-
 @keyframes pop {
   0% {
     -webkit-transform: scale(0);
@@ -455,7 +467,6 @@ hr {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1); } }
-
 .tile-merged .tile-inner {
   z-index: 20;
   -webkit-animation: pop 200ms ease 100ms;
@@ -465,8 +476,28 @@ hr {
   -moz-animation-fill-mode: backwards;
   animation-fill-mode: backwards; }
 
+.above-game:after {
+  content: "";
+  display: block;
+  clear: both; }
+
 .game-intro {
+  float: left;
+  line-height: 42px;
   margin-bottom: 0; }
+
+.restart-button {
+  display: inline-block;
+  background: #8f7a66;
+  border-radius: 3px;
+  padding: 0 20px;
+  text-decoration: none;
+  color: #f9f6f2;
+  height: 40px;
+  line-height: 42px;
+  display: block;
+  text-align: center;
+  float: right; }
 
 .game-explanation {
   margin-top: 50px; }
@@ -495,19 +526,35 @@ hr {
   .heading {
     margin-bottom: 10px; }
 
+  .game-intro {
+    width: 55%;
+    display: block;
+    box-sizing: border-box;
+    line-height: 1.65; }
+
+  .restart-button {
+    width: 42%;
+    padding: 0;
+    display: block;
+    box-sizing: border-box;
+    margin-top: 2px; }
+
   .game-container {
-    margin-top: 40px;
+    margin-top: 17px;
     position: relative;
     padding: 10px;
     cursor: default;
     -webkit-touch-callout: none;
+    -ms-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+    -ms-user-select: none;
+    -ms-touch-action: none;
+    touch-action: none;
     background: #bbada0;
     border-radius: 6px;
     width: 280px;
     height: 280px;
-    -ms-touch-action: none;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
@@ -651,9 +698,6 @@ hr {
     -webkit-transform: translate(202px, 202px);
     -moz-transform: translate(202px, 202px);
     transform: translate(202px, 202px); }
-
-  .game-container {
-    margin-top: 20px; }
 
   .tile .tile-inner {
     font-size: 35px; }

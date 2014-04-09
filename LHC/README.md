@@ -1,6 +1,4 @@
-Just for these who like physics to have fun.
+# LHC
+A small clone of [2048](http://gabrielecirulli.github.io/2048/), inspired by [Milrivel's LHC](http://milrivel.github.io/LHC/).
 
-Forked from Milrivel's fork of gabrielecirulli's 2048.
-
-Play it here : http://spitty.github.io/LHC/
-
+[Play it here!](http://spitty.github.io/2048/)

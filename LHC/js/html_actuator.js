@@ -36,7 +36,7 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
 };
 
 // Continues the game (both restart and keep playing)
-HTMLActuator.prototype.continue = function () {
+HTMLActuator.prototype.continueGame = function () {
   this.clearMessage();
 };
 
@@ -140,7 +140,7 @@ HTMLActuator.prototype.updateBestScore = function (bestScore) {
 
 HTMLActuator.prototype.message = function (won) {
   var type    = won ? "game-won" : "game-over";
-  var message = won ? "Wow! You are next year's Nobelist!" : "Er... LHC breaks down......";
+  var message = won ? "You win!" : "Game over!";
 
   this.messageContainer.classList.add(type);
   this.messageContainer.getElementsByTagName("p")[0].textContent = message;
