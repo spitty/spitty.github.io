@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Задолженности за коммунальные платежи</title>
+    <style type="text/css">
+        body {
+            font-family: Arial;
+        }
+        svg.house {
+            background-color: #999999;
+        }
+        .flat {
+            background-color: #FAFAFA;
+            /*fill:#FFFFFF;*/
+            stroke: none;
+        }
+        .level0 {
+            fill:#FFFFFF;
+        }
+        .level1 {
+            fill:#FFE738;
+        }
+        .level2 {
+            fill:#FFCB3E;
+        }
+        .level3 {
+            fill:#FFAF45;
+        }
+        .level4 {
+            fill:#FF934B;
+        }
+        .level5 {
+            fill:#FF7752;
+        }
+        svg.legend {
+            background-color: #F0F0F0;
+        }
+        text {
+            font-family: Arial;
+            font-size: 10pt;
+        }
+        rect.tooltip {
+            fill: #FFFFFF;
+            stroke-width: 1;
+            stroke: rgb(0,0,0);
+        }
+        .invisible {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>Визуализация задолженностей по коммунальным платежам</h2>
+        <h3>Исходные данные</h3>
+        <a href="http://alternativaprofi.com/viewpage.php?page_id=7">Страница о должниках</a> на сайте управляющей компании <a href="http://alternativaprofi.com/">"Альтернатива-Профи"</a>. Ссылка на данные <a href="http://alternativaprofi.com/downloads.php?cat_id=1&file_id=212">тут</a>.
+        <h3>Визуализация</h3>
+        Более тёмный цвет &ndash; больший размер задолженности. Суммы в рублях.
+    </div>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript">
+
+var debug = false;
+function log(text) {
+    if (debug) {
+        console.log(text);
+    }
+}
+
+mapDebtToColor = [
+    [60000, 'level5'],
+    [45000, 'level4'],
+    [15000, 'level3'],
+    [5000, 'level2'],
+    [0, 'level1'],
+];
+
+font_size = 10;
+
+rsize = 10;
+padding = 1;
+psize = rsize + padding;
+porch_padding = 5;
+margin = 20;
+cols_cnt = 9 * 4;
+rows_cnt = 18;
+
+var tooltip_width = 100 + 10;
+var tooltip_height = font_size + 10;
+
+width = 2 * margin + psize * cols_cnt + porch_padding * 8;
+height = 2 * margin + psize * rows_cnt
+    + tooltip_height + 2 * padding /* porch tooltip */
+;
+
+var porch_tooltip_y = margin + psize * rows_cnt + padding;
+function porch_tooltip_x(porchNum) {
+    return margin
+        + porchNum * (4 * psize + porch_padding)
+        + 2 * psize + padding/2;
+}
+
+function getPorch(flatNum) {
+    return Math.floor((flatNum-1)/72);
+}
+
+var legend = d3.select("body").append("svg")
+    .attr("width", 100)
+    .attr("height", psize * 5 + margin * 2)
+    .attr("class", "legend");
+
+var legend_rect = legend.selectAll("flat")
+    .data(d3.range(0, 5))
+    .enter().append("rect")
+    .attr("width", rsize)
+    .attr("height", rsize)
+    .attr("x", margin)
+    .attr("y", function(d) { return margin + psize * d; })
+    .attr("class", function(d) { return "flat level"+(d+1); });
+
+legend.selectAll("debt_text")
+    .data(mapDebtToColor)
+    .enter().append("text")
+    .attr("x", margin + rsize + 5)
+    .attr("y", function(d,i) { return margin + psize * (4 - i) + font_size; })
+    .text(function(d) { return "> " + d[0]});
+
+d3.select("body").append("br");
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("class", "house");
+
+var rect = svg.selectAll("flat")
+    .data(d3.range(0, cols_cnt * rows_cnt))
+    .enter().append("rect")
+    .attr("width", rsize)
+    .attr("height", rsize)
+    .attr("class", "flat level0")
+    // .attr("fill", "#FFF")
+    .attr("id", function(d) {return "f" + (d+1);})
+    .attr("x", function(d) {
+        return margin 
+            + Math.floor(d/72) * (4 * psize + porch_padding) 
+            + (d%4) * psize; })
+    .attr("y", function(d) {
+        return margin
+            + psize * (rows_cnt - (Math.floor((d%72) / 4)))
+            - psize; 
+    });
+
+var tooltip = svg.append("g")
+    .classed("invisible", true);
+
+tooltip
+    .append("rect")
+    .attr("width", tooltip_width)
+    .attr("height", tooltip_height)
+    .attr("x", 1)
+    .attr("y", rsize/2 -(font_size + 10)/2)
+    .classed("tooltip", true);
+
+var tooltip_text =
+    tooltip
+    .append("text")
+    .attr("y", rsize/2 + font_size/2)
+    .attr("x", 5);
+
+var porch_tooltip = svg.append("g")
+    .classed("invisible", true);
+
+porch_tooltip
+    .append("rect")
+    .attr("width", tooltip_width)
+    .attr("height", tooltip_height)
+    .attr("x", 1)
+    .attr("y", rsize/2 -(font_size + 10)/2)
+    .classed("tooltip", true);
+
+var porch_tooltip_text =
+    porch_tooltip
+    .append("text")
+    .attr("y", rsize/2 + font_size/2)
+    .attr("x", 5);
+
+function mapColor(debt) {
+    for (i in mapDebtToColor) {
+        if (debt > mapDebtToColor[i][0]) {
+            return mapDebtToColor[i][1];
+        }
+    }
+}
+
+function showTooltip(x, y, tooltipRef, text, position) {
+    if (typeof(position) === "undefined") {
+        position = "right";
+    }
+
+    log("showTooltip (x,y):" + "(" + x + "," + y + ")");
+    var tc_x, tc_y;
+    switch(position) {
+        case "bottom":
+            tc_x = x + rsize/2;
+            tc_y = y + rsize/2 + tooltip_height/2;
+            break;
+        case "right":
+        default:
+            tc_x = x + rsize/2 + tooltip_width/2;
+            tc_y = y + rsize/2;
+
+            if (tc_x + tooltip_width/2 > width) {
+                tc_x = x - rsize/2 - tooltip_width/2 - 2;
+            }
+            break;
+    }
+
+    if(tc_x < tooltip_width / 2) {
+        tc_x = tooltip_width / 2;
+    }
+
+    if(tc_x > width - tooltip_width / 2) {
+        tc_x = width - tooltip_width / 2;
+    }
+
+
+    var g_x = tc_x - tooltip_width/2;
+    var g_y = tc_y - tooltip_height/2;
+
+
+    log("showTooltip (g_x,g_y):" + "(" + g_x + "," + g_y + ")");
+    tooltipRef
+        .attr("transform", "translate(" + g_x + ", " + g_y + ")")
+        .classed("invisible", false);
+    tooltipRef.selectAll("text").text(text);
+}
+
+function showPorchTooltip(flatNum) {
+    var porchNum = Math.floor((flatNum - 1) / 72);
+
+}
+
+function hideTooltip(tooltipRef) {
+    tooltipRef
+        .attr("transform", "translate(0, 0)")
+        .classed("invisible", true);
+    tooltipRef.selectAll("text").text("");
+}
+
+var porch_debts = {};
+for(var porchNum in d3.range(0,9)) {
+    porch_debts[porchNum] = 0.0;
+}
+
+d3.json("data.json", function(error, root) {
+    if (error) throw error;
+    for(x in root) {
+        var elem = root[x];
+        var debt = parseFloat(elem["debt"]);
+        var flatNo = elem['flat'];
+        
+        var porchNum = getPorch(flatNo);
+        porch_debts[porchNum] += debt;
+
+        var flat = svg.selectAll("#f" + flatNo);
+        
+        flat.attr("class", "flat " + mapColor(debt));
+        flat.data([{"flatNo":flatNo, "debt": debt}]);
+        flat.on("mouseover", function(d) {
+            var t = d3.select(this);
+            log(t.attr("x") + ":" + t.attr("y"));
+            var x = parseInt(t.attr("x")) + rsize / 2;
+            var y = parseInt(t.attr("y")) + rsize / 2;
+            var text = d["flatNo"] + ": " + d["debt"];
+            showTooltip(x, y, tooltip, text);
+            var porchNum = getPorch(d["flatNo"]);
+            showTooltip(porch_tooltip_x(porchNum), porch_tooltip_y, porch_tooltip
+                , "Porch " + (porchNum + 1) + ": " + porch_debts[porchNum]
+                , "bottom");
+        });
+        flat.on("mouseout", function() {
+            hideTooltip(tooltip);
+            hideTooltip(porch_tooltip);
+        });
+    }
+    for(var porchNum in porch_debts) {
+        porch_debts[porchNum] = Math.floor(porch_debts[porchNum]);
+    }
+});
+
+    </script>
+</body>
+</html>
