@@ -34,7 +34,7 @@
             fill:#FF7752;
         }
         svg.legend {
-            background-color: #F0F0F0;
+            background-color: #999999;
         }
         text {
             font-family: Arial;
@@ -74,6 +74,7 @@ mapDebtToColor = [
     [15000, 'level3'],
     [5000, 'level2'],
     [0, 'level1'],
+    [-1, 'level0']
 ];
 
 font_size = 10;
@@ -107,24 +108,24 @@ function getPorch(flatNum) {
 
 var legend = d3.select("body").append("svg")
     .attr("width", 100)
-    .attr("height", psize * 5 + margin * 2)
+    .attr("height", psize * 6 + margin * 2)
     .attr("class", "legend");
 
 var legend_rect = legend.selectAll("flat")
-    .data(d3.range(0, 5))
+    .data(d3.range(0, 6))
     .enter().append("rect")
     .attr("width", rsize)
     .attr("height", rsize)
     .attr("x", margin)
     .attr("y", function(d) { return margin + psize * d; })
-    .attr("class", function(d) { return "flat level"+(d+1); });
+    .attr("class", function(d) { return "flat level"+(d); });
 
 legend.selectAll("debt_text")
     .data(mapDebtToColor)
     .enter().append("text")
     .attr("x", margin + rsize + 5)
-    .attr("y", function(d,i) { return margin + psize * (4 - i) + font_size; })
-    .text(function(d) { return "> " + d[0]});
+    .attr("y", function(d,i) { return margin + psize * (5 - i) + font_size; })
+    .text(function(d) { return d[0] >= 0 ? "> " + d[0] : "= 0"});
 
 d3.select("body").append("br");
 
@@ -255,6 +256,11 @@ for(var porchNum in d3.range(0,9)) {
 
 d3.json("data.json", function(error, root) {
     if (error) throw error;
+    var flatDebts = {};
+    for(var flatNum in d3.range(0, 72*9)) {
+        flatDebts[parseInt(flatNum)+1] = {"debt": 0.0};
+    }
+
     for(x in root) {
         var elem = root[x];
         var debt = parseFloat(elem["debt"]);
@@ -262,7 +268,11 @@ d3.json("data.json", function(error, root) {
         
         var porchNum = getPorch(flatNo);
         porch_debts[porchNum] += debt;
+        flatDebts[flatNo] = {"debt": debt};
+    }
 
+    for(var flatNo in flatDebts) {
+        var debt = flatDebts[flatNo]["debt"];
         var flat = svg.selectAll("#f" + flatNo);
         
         flat.attr("class", "flat " + mapColor(debt));
