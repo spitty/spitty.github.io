@@ -24,6 +24,23 @@ function log(text) {
     }
 }
 
+function formatNumber(nStr)
+{
+    nStr += '';
+    x = nStr.split('.');
+    x1 = x[0];
+    x2 = x.length > 1
+        ? '.' + (x[1].length > 1
+            ? x[1].substr(0,2)
+            : x[1] + "0")
+        : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ' ' + '$2');
+    }
+    return x1 + x2;
+}
+
 font_size = 10;
 
 rsize = 10;
@@ -91,7 +108,7 @@ function fill_legend(max_debt) {
 
     legend.append("text")
         .attr("id", "maxvalue")
-        .text(max_debt)
+        .text(formatNumber(max_debt))
         .attr("x", function() { return margin + color_scale_width - this.getBBox().width; })
         .attr("y", margin - padding)
         ;
@@ -131,7 +148,7 @@ function update_legend_tooltip(debt, max_debt) {
                 .replace(/#left#/g, left)
         );
     var l_tooltip_text = l_tooltip.select("#l_tooltip_text")
-        .text(debt)
+        .text(formatNumber(debt))
         .attr("y", 25 - (20 - font_size) / 2)
         .attr("x", function() { return left + 50 - this.getBBox().width / 2; });
 
@@ -268,6 +285,15 @@ for(var porchNum in d3.range(0,9)) {
     porch_debts[porchNum] = 0.0;
 }
 
+d3.select("body").append("div")
+    .attr("id", "debts_total");
+d3.select("body").append("div")
+    .attr("id", "debts_layout");
+d3.select("body").append("div")
+    .attr("id", "debts_porch");
+d3.select("body").append("div")
+    .attr("id", "debts_floor");
+
 var max_debt = 0.;
 d3.json("data.json", function(error, root) {
     if (error) throw error;
@@ -276,10 +302,16 @@ d3.json("data.json", function(error, root) {
         flatDebts[parseInt(flatNum)+1] = {"debt": 0.0};
     }
 
+    var debts_layout = {"1room": 0., "3room": 0.};
+    var debts_floor = {};
+    for(var floorNum in d3.range(0,18)) {
+        debts_floor[1*floorNum+2] = 0.;
+    }
+    var debts_total = 0.;
     for(x in root) {
         var elem = root[x];
         var debt = parseFloat(elem["debt"]);
-        var flatNo = elem['flat'];
+        var flatNo = parseInt(elem["flat"]);
         
         var porchNum = getPorch(flatNo);
         porch_debts[porchNum] += debt;
@@ -288,7 +320,53 @@ d3.json("data.json", function(error, root) {
         if(debt > max_debt) {
             max_debt = Math.ceil(debt);
         }
+        if(flatNo % 4 > 1) {
+            debts_layout["1room"] += debt;
+        } else {
+            debts_layout["3room"] += debt;
+        }
+        var floorNum = 2 + Math.floor((flatNo-1) % 72 / 4);
+        debts_floor[floorNum] += debt;
+        debts_total += debt;
     }
+
+    var div_debts_total = d3.select("body").select("#debts_total");
+    div_debts_total.append("p").text("Суммарная задолженность: " + formatNumber(debts_total));
+
+    var div_debts_layout = d3.select("body").select("#debts_layout");
+    div_debts_layout.append("p").text("Задолженности по типам квартир:")
+    div_debts_layout.append("ul")
+        .selectAll("li")
+        .data([{"type": "1-комнатная", "sum_debts": debts_layout["1room"]}
+            , {"type": "3-комнатная", "sum_debts": debts_layout["3room"]}
+            ])
+        .enter().append("li")
+        .text(function(d) { return d["type"] + ": " + formatNumber(Math.floor(d["sum_debts"])); });
+
+
+    var div_debts_porch = d3.select("body").select("#debts_porch");
+    var debts_porch_data = [];
+    for(var porchNum in porch_debts) {
+        debts_porch_data.push({"porchNum": 1*porchNum + 1 , "sum_debts": porch_debts[porchNum]});
+    }
+    div_debts_porch.append("p").text("Задолженности по подъездам:")
+    div_debts_porch.append("ul")
+        .selectAll("li")
+        .data(debts_porch_data)
+        .enter().append("li")
+        .text(function(d) { return "№" + d["porchNum"] + ": " + formatNumber(Math.floor(d["sum_debts"])); });
+
+    var div_debts_floor = d3.select("body").select("#debts_floor");
+    var debts_floor_data = [];
+    for(var floorNum in debts_floor) {
+        debts_floor_data.push({"floorNum": floorNum, "sum_debts": debts_floor[floorNum]});
+    }
+    div_debts_floor.append("p").text("Задолженности по этажам:")
+    div_debts_floor.append("ul")
+        .selectAll("li")
+        .data(debts_floor_data)
+        .enter().append("li")
+        .text(function(d) { return "Этаж " + d["floorNum"] + ": " + formatNumber(Math.floor(d["sum_debts"])); });
 
     for(var flatNo in flatDebts) {
         var debt = flatDebts[flatNo]["debt"];
@@ -301,17 +379,17 @@ d3.json("data.json", function(error, root) {
             log(t.attr("x") + ":" + t.attr("y"));
             var x = parseInt(t.attr("x")) + rsize / 2;
             var y = parseInt(t.attr("y")) + rsize / 2;
-            var text = d["flatNo"] + ": " + d["debt"];
+            var text = d["flatNo"] + ": " + formatNumber(d["debt"]);
             showTooltip(x, y, tooltip, text);
             var porchNum = getPorch(d["flatNo"]);
             showTooltip(porch_tooltip_x(porchNum), porch_tooltip_y, porch_tooltip
-                , "Porch " + (porchNum + 1) + ": " + porch_debts[porchNum]
+                , "№" + (porchNum + 1) + ": " + formatNumber(porch_debts[porchNum])
                 , "bottom");
             update_legend_tooltip(d["debt"], max_debt);
         });
         flat.on("mouseout", function() {
             hideTooltip(tooltip);
-            hideTooltip(porch_tooltip);
+            // hideTooltip(porch_tooltip);
         });
     }
     for(var porchNum in porch_debts) {
