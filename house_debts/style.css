@@ -1,0 +1,44 @@
+body {
+    font-family: Arial;
+}
+svg.house {
+    background-color: #999999;
+}
+.flat {
+    background-color: #FAFAFA;
+    /*fill:#FFFFFF;*/
+    stroke: none;
+}
+.level0 {
+    fill:#FFFFFF;
+}
+.level1 {
+    fill:#FFE738;
+}
+.level2 {
+    fill:#FFCB3E;
+}
+.level3 {
+    fill:#FFAF45;
+}
+.level4 {
+    fill:#FF934B;
+}
+.level5 {
+    fill:#FF7752;
+}
+svg.legend {
+    background-color: #999999;
+}
+text {
+    font-family: Arial;
+    font-size: 10pt;
+}
+rect.tooltip {
+    fill: #FFFFFF;
+    stroke-width: 1;
+    stroke: rgb(0,0,0);
+}
+.invisible {
+    visibility: hidden;
+}
